@@ -47,4 +47,4 @@ jobs:
         with:
           images: lucianodinizsts/rotten-potatoes:${{ github.run_number }}
           manifests: |
-            rotten-potatoes/deployment.yaml
+            deployment.yaml

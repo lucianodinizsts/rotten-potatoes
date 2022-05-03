@@ -1,5 +1,5 @@
 ---
-name: CI-CD
+name: CICD
 
 on:
   push:
@@ -8,7 +8,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  CI:
+    needs: CI
     runs-on: ubuntu-latest
 
     steps:
@@ -28,3 +29,22 @@ jobs:
           tags: |
             lucianodinizsts/rotten-potatoes:latest 
             lucianodinizsts/rotten-potatoes:${{ github.run_number }}
+
+  CD:
+    runs-on: ubuntu-latest
+  
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Kubernetes Set Context
+        uses: Azure/k8s-set-context@v2
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.K8S_KUBECONFIG }}
+
+      - name: Deploy to Kubernetes cluster
+        uses: Azure/k8s-deploy@v3.1
+        with:
+          images: lucianodinizsts/rotten-potatoes:${{ github.run_number }}
+          manifests: |
+            rotten-potatoes/deployment.yaml
